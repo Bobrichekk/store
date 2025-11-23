@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -462,10 +462,6 @@
             padding-top: 6px;
         }
 
-        .status-offline span {
-            color: #f87171;
-        }
-
         /* ===== ПОДВАЛ ===== */
         footer {
             border-top: 1px solid #111827;
@@ -639,7 +635,7 @@
         <!-- ===== ЛЕВАЯ КОЛОНКА / САЙДБАР ===== -->
         <aside class="sidebar">
             <div class="sidebar-section">
-                <div class="sidebar-title">Категории</div>
+                <div class="sidebar-title" id="sidebar-categories-title">Категории</div>
                 <div class="category-list">
                     <div class="category-item">
                         Смартфоны и гаджеты <span>128</span>
@@ -666,14 +662,14 @@
             </div>
 
             <div class="sidebar-section">
-                <div class="sidebar-title">Цена</div>
+                <div class="sidebar-title" id="sidebar-price-title">Цена</div>
                 <div class="price-range">
                     <label>
-                        От:
+                        <span id="price-from-label">От:</span>
                         <input type="text" placeholder="недоступно">
                     </label>
                     <label>
-                        До:
+                        <span id="price-to-label">До:</span>
                         <input type="text" placeholder="недоступно">
                     </label>
                 </div>
@@ -786,91 +782,243 @@
 </script>
 
 <script>
-    // ===== МУЛЬТИЯЗЫЧНЫЙ СПИСОК ТОВАРОВ (АРХИВ) =====
+    // ===== МУЛЬТИЯЗЫЧНЫЙ СПИСОК ТОВАРОВ (АРХИВ) + ПЕРЕВОД UI =====
     (function () {
         const productsContainer = document.getElementById('products');
         const langSelect = document.getElementById('langSelect');
 
         if (!productsContainer) return;
 
-const items = [
-{ id:1, usd:120, img:"images/1.png",
-names:{ru:"Рюкзак TrekPro 75L",en:"TrekPro 75L Backpack",de:"TrekPro 75L Rucksack",es:"Mochila TrekPro 75L",fr:"Sac TrekPro 75L",
-pl:"Plecak TrekPro 75L",pt:"Mochila TrekPro 75L",tr:"TrekPro 75L Sırt Çantası",zh:"TrekPro 75L 背包",zht:"TrekPro 75L 背包",
-ja:"TrekPro 75L バックパック",ko:"TrekPro 75L 백팩",ar:"حقيبة TrekPro 75L",uk:"Рюкзак TrekPro 75L"}},
+        // Тексты интерфейса
+        const uiText = {
+            ru: {
+                buyNow: "Купить сейчас",
+                compare: "Сравнить",
+                networkDown: "Сеть недоступна. Оформление заказа невозможно.",
+                categoriesTitle: "Категории",
+                priceTitle: "Цена",
+                priceFrom: "От:",
+                priceTo: "До:"
+            },
+            en: {
+                buyNow: "Buy now",
+                compare: "Compare",
+                networkDown: "Network unavailable. Ordering is not possible.",
+                categoriesTitle: "Categories",
+                priceTitle: "Price",
+                priceFrom: "From:",
+                priceTo: "To:"
+            },
+            de: {
+                buyNow: "Jetzt kaufen",
+                compare: "Vergleichen",
+                networkDown: "Netzwerk nicht verfügbar. Bestellung nicht möglich.",
+                categoriesTitle: "Kategorien",
+                priceTitle: "Preis",
+                priceFrom: "Von:",
+                priceTo: "Bis:"
+            },
+            es: {
+                buyNow: "Comprar ahora",
+                compare: "Comparar",
+                networkDown: "La red no está disponible. No es posible realizar pedidos.",
+                categoriesTitle: "Categorías",
+                priceTitle: "Precio",
+                priceFrom: "Desde:",
+                priceTo: "Hasta:"
+            },
+            fr: {
+                buyNow: "Acheter maintenant",
+                compare: "Comparer",
+                networkDown: "Réseau indisponible. Impossible de passer une commande.",
+                categoriesTitle: "Catégories",
+                priceTitle: "Prix",
+                priceFrom: "De :",
+                priceTo: "Jusqu'à :"
+            },
+            pl: {
+                buyNow: "Kup teraz",
+                compare: "Porównać",
+                networkDown: "Sieć niedostępna. Złożenie zamówienia jest niemożliwe.",
+                categoriesTitle: "Kategorie",
+                priceTitle: "Cena",
+                priceFrom: "Od:",
+                priceTo: "Do:"
+            },
+            pt: {
+                buyNow: "Comprar agora",
+                compare: "Comparar",
+                networkDown: "Rede indisponível. Não é possível fazer pedidos.",
+                categoriesTitle: "Categorias",
+                priceTitle: "Preço",
+                priceFrom: "De:",
+                priceTo: "Até:"
+            },
+            tr: {
+                buyNow: "Hemen satın al",
+                compare: "Karşılaştır",
+                networkDown: "Ağ kullanılamıyor. Sipariş verilemez.",
+                categoriesTitle: "Kategoriler",
+                priceTitle: "Fiyat",
+                priceFrom: "En az:",
+                priceTo: "En fazla:"
+            },
+            zh: {
+                buyNow: "立即购买",
+                compare: "对比",
+                networkDown: "网络不可用。无法下单。",
+                categoriesTitle: "类别",
+                priceTitle: "价格",
+                priceFrom: "从：",
+                priceTo: "到："
+            },
+            zht: {
+                buyNow: "立即購買",
+                compare: "比較",
+                networkDown: "網路無法使用。無法下單。",
+                categoriesTitle: "類別",
+                priceTitle: "價格",
+                priceFrom: "從：",
+                priceTo: "到："
+            },
+            ja: {
+                buyNow: "今すぐ購入",
+                compare: "比較する",
+                networkDown: "ネットワークが利用できません。注文はできません。",
+                categoriesTitle: "カテゴリ",
+                priceTitle: "価格",
+                priceFrom: "最低:",
+                priceTo: "最大:"
+            },
+            ko: {
+                buyNow: "지금 구매",
+                compare: "비교하기",
+                networkDown: "네트워크를 사용할 수 없습니다. 주문이 불가능합니다.",
+                categoriesTitle: "카테고리",
+                priceTitle: "가격",
+                priceFrom: "최소:",
+                priceTo: "최대:"
+            },
+            ar: {
+                buyNow: "اشترِ الآن",
+                compare: "مقارنة",
+                networkDown: "الشبكة غير متاحة. لا يمكن إجراء طلبات.",
+                categoriesTitle: "الفئات",
+                priceTitle: "السعر",
+                priceFrom: "من:",
+                priceTo: "إلى:"
+            },
+            uk: {
+                buyNow: "Купити зараз",
+                compare: "Порівняти",
+                networkDown: "Мережа недоступна. Оформити замовлення неможливо.",
+                categoriesTitle: "Категорії",
+                priceTitle: "Ціна",
+                priceFrom: "Від:",
+                priceTo: "До:"
+            }
+        };
 
-{ id:2, usd:35, img:"images/2.png",
-names:{ru:"Газовая горелка FirePeak Mini",en:"FirePeak Mini Stove",de:"FirePeak Mini Kocher",es:"Estufa FirePeak Mini",fr:"Réchaud FirePeak Mini",
-pl:"Kuchenka FirePeak Mini",pt:"Fogareiro FirePeak Mini",tr:"FirePeak Mini Ocak",zh:"FirePeak Mini 炉具",zht:"FirePeak Mini 爐具",
-ja:"FirePeak Mini ストーブ",ko:"FirePeak Mini 스토브",ar:"موقد FirePeak Mini",uk:"Пальник FirePeak Mini"}},
+        // Список товаров
+        const items = [
+            { id:1, usd:120, img:"images/1.png",
+                names:{ru:"Рюкзак TrekPro 75L",en:"TrekPro 75L Backpack",de:"TrekPro 75L Rucksack",es:"Mochila TrekPro 75L",fr:"Sac TrekPro 75L",
+                    pl:"Plecak TrekPro 75L",pt:"Mochila TrekPro 75L",tr:"TrekPro 75L Sırt Çantası",zh:"TrekPro 75L 背包",zht:"TrekPro 75L 背包",
+                    ja:"TrekPro 75L バックパック",ko:"TrekPro 75L 백팩",ar:"حقيبة TrekPro 75L",uk:"Рюкзак TrekPro 75L"}},
 
-{ id:3, usd:90, img:"images/3.png",
-names:{ru:"Спальный мешок ArcticSleep -15°C",en:"ArcticSleep -15°C Sleeping Bag",de:"ArcticSleep -15°C Schlafsack",es:"Saco ArcticSleep -15°C",
-fr:"Sac de couchage ArcticSleep",pl:"Śpiwór ArcticSleep",pt:"Saco ArcticSleep",tr:"ArcticSleep Uyku Tulumu",zh:"ArcticSleep 睡袋",
-zht:"ArcticSleep 睡袋",ja:"ArcticSleep 寝袋",ko:"ArcticSleep 침낭",ar:"كيس نوم ArcticSleep",uk:"Спальник ArcticSleep"}},
+            { id:2, usd:35, img:"images/2.png",
+                names:{ru:"Газовая горелка FirePeak Mini",en:"FirePeak Mini Stove",de:"FirePeak Mini Kocher",es:"Estufa FirePeak Mini",fr:"Réchaud FirePeak Mini",
+                    pl:"Kuchenka FirePeak Mini",pt:"Fogareiro FirePeak Mini",tr:"FirePeak Mini Ocak",zh:"FirePeak Mini 炉具",zht:"FirePeak Mini 爐具",
+                    ja:"FirePeak Mini ストーブ",ko:"FirePeak Mini 스토브",ar:"موقد FirePeak Mini",uk:"Пальник FirePeak Mini"}},
 
-{ id:4, usd:150, img:"images/4.png",
-names:{ru:"Палатка TrailDome 2",en:"TrailDome 2 Tent",de:"TrailDome 2 Zelt",es:"Tienda TrailDome 2",fr:"Tente TrailDome 2",
-pl:"Namiot TrailDome 2",pt:"Tenda TrailDome 2",tr:"TrailDome 2 Çadır",zh:"TrailDome 2 帐篷",zht:"TrailDome 2 帳篷",
-ja:"TrailDome 2 テント",ko:"TrailDome 2 텐트",ar:"خيمة TrailDome 2",uk:"Намет TrailDome 2"}},
+            { id:3, usd:90, img:"images/3.png",
+                names:{ru:"Спальный мешок ArcticSleep -15°C",en:"ArcticSleep -15°C Sleeping Bag",de:"ArcticSleep -15°C Schlafsack",es:"Saco ArcticSleep -15°C",
+                    fr:"Sac de couchage ArcticSleep",pl:"Śpiwór ArcticSleep",pt:"Saco ArcticSleep",tr:"ArcticSleep Uyku Tulumu",zh:"ArcticSleep 睡袋",
+                    zht:"ArcticSleep 睡袋",ja:"ArcticSleep 寝袋",ko:"ArcticSleep 침낭",ar:"كيس نوم ArcticSleep",uk:"Спальник ArcticSleep"}},
 
-{ id:5, usd:40, img:"images/5.png",
-names:{ru:"Фильтр для воды ClearStream",en:"ClearStream Water Filter",de:"ClearStream Wasserfilter",es:"Filtro ClearStream",
-fr:"Filtre ClearStream",pl:"Filtr ClearStream",pt:"Filtro ClearStream",tr:"ClearStream Su Filtresi",zh:"ClearStream 过滤器",
-zht:"ClearStream 過濾器",ja:"ClearStream フィルター",ko:"ClearStream 필터",ar:"فلتر ClearStream",uk:"Фільтр ClearStream"}},
+            { id:4, usd:150, img:"images/4.png",
+                names:{ru:"Палатка TrailDome 2",en:"TrailDome 2 Tent",de:"TrailDome 2 Zelt",es:"Tienda TrailDome 2",fr:"Tente TrailDome 2",
+                    pl:"Namiot TrailDome 2",pt:"Tenda TrailDome 2",tr:"TrailDome 2 Çadır",zh:"TrailDome 2 帐篷",zht:"TrailDome 2 帳篷",
+                    ja:"TrailDome 2 テント",ko:"TrailDome 2 텐트",ar:"خيمة TrailDome 2",uk:"Намет TrailDome 2"}},
 
-{ id:6, usd:70, img:"images/6.png",
-names:{ru:"Мультитул SteelHand 18-в-1",en:"SteelHand 18-in-1 Multitool",de:"SteelHand Multitool",es:"Multiherramienta SteelHand",
-fr:"Outil SteelHand",pl:"Multitool SteelHand",pt:"Multitool SteelHand",tr:"SteelHand Çoklu Alet",zh:"SteelHand 工具",
-zht:"SteelHand 工具",ja:"SteelHand マルチツール",ko:"SteelHand 멀티툴",ar:"عدة SteelHand",uk:"Мультитул SteelHand"}},
+            { id:5, usd:40, img:"images/5.png",
+                names:{ru:"Фильтр для воды ClearStream",en:"ClearStream Water Filter",de:"ClearStream Wasserfilter",es:"Filtro ClearStream",
+                    fr:"Filtre ClearStream",pl:"Filtr ClearStream",pt:"Filtro ClearStream",tr:"ClearStream Su Filtresi",zh:"ClearStream 过滤器",
+                    zht:"ClearStream 過濾器",ja:"ClearStream フィルター",ko:"ClearStream 필터",ar:"فلتر ClearStream",uk:"Фільтр ClearStream"}},
 
-{ id:7, usd:55, img:"images/7.png",
-names:{ru:"Нож HunterEdge 110",en:"HunterEdge 110 Knife",de:"HunterEdge 110 Messer",es:"Cuchillo HunterEdge 110",
-fr:"Couteau HunterEdge 110",pl:"Nóż HunterEdge 110",pt:"Faca HunterEdge 110",tr:"HunterEdge 110 Bıçak",zh:"HunterEdge 110 刀",
-zht:"HunterEdge 110 刀",ja:"HunterEdge 110 ナイフ",ko:"HunterEdge 110 나이프",ar:"سكين HunterEdge 110",uk:"Ніж HunterEdge 110"}},
+            { id:6, usd:70, img:"images/6.png",
+                names:{ru:"Мультитул SteelHand 18-в-1",en:"SteelHand 18-in-1 Multitool",de:"SteelHand Multitool",es:"Multiherramienta SteelHand",
+                    fr:"Outil SteelHand",pl:"Multitool SteelHand",pt:"Multitool SteelHand",tr:"SteelHand Çoklu Alet",zh:"SteelHand 工具",
+                    zht:"SteelHand 工具",ja:"SteelHand マルチツール",ko:"SteelHand 멀티툴",ar:"عدة SteelHand",uk:"Мультитул SteelHand"}},
 
-{ id:8, usd:30, img:"images/8.png",
-names:{ru:"Налобный фонарь LightWay 600",en:"LightWay 600 Headlamp",de:"LightWay 600 Stirnlampe",es:"Linterna LightWay 600",
-fr:"Lampe LightWay 600",pl:"Latarka LightWay 600",pt:"Lanterna LightWay 600",tr:"LightWay 600 Kafa Lambası",zh:"LightWay 600 头灯",
-zht:"LightWay 600 頭燈",ja:"LightWay 600 ランプ",ko:"LightWay 600 헤드램프",ar:"مصباح LightWay 600",uk:"Ліхтар LightWay 600"}},
+            { id:7, usd:55, img:"images/7.png",
+                names:{ru:"Нож HunterEdge 110",en:"HunterEdge 110 Knife",de:"HunterEdge 110 Messer",es:"Cuchillo HunterEdge 110",
+                    fr:"Couteau HunterEdge 110",pl:"Nóż HunterEdge 110",pt:"Faca HunterEdge 110",tr:"HunterEdge 110 Bıçak",zh:"HunterEdge 110 刀",
+                    zht:"HunterEdge 110 刀",ja:"HunterEdge 110 ナイフ",ko:"HunterEdge 110 나이프",ar:"سكين HunterEdge 110",uk:"Ніж HunterEdge 110"}},
 
-{ id:9, usd:12, img:"images/9.png",
-names:{ru:"Паракорд SurvivalCord 550",en:"SurvivalCord 550 Paracord",de:"SurvivalCord Paracord",es:"Paracord SurvivalCord",
-fr:"Paracord SurvivalCord",pl:"Paracord SurvivalCord",pt:"Paracord SurvivalCord",tr:"SurvivalCord Halat",zh:"SurvivalCord 伞绳",
-zht:"SurvivalCord 傘繩",ja:"SurvivalCord パラコード",ko:"SurvivalCord 패러코드",ar:"حبل SurvivalCord",uk:"Паракорд SurvivalCord"}},
+            { id:8, usd:30, img:"images/8.png",
+                names:{ru:"Налобный фонарь LightWay 600",en:"LightWay 600 Headlamp",de:"LightWay 600 Stirnlampe",es:"Linterna LightWay 600",
+                    fr:"Lampe LightWay 600",pl:"Latarka LightWay 600",pt:"Lanterna LightWay 600",tr:"LightWay 600 Kafa Lambası",zh:"LightWay 600 头灯",
+                    zht:"LightWay 600 頭燈",ja:"LightWay 600 ランプ",ko:"LightWay 600 헤드램프",ar:"مصباح LightWay 600",uk:"Ліхтар LightWay 600"}},
 
-{ id:10, usd:20, img:"images/10.png",
-names:{ru:"Фляга FieldBottle 1L",en:"FieldBottle 1L Flask",de:"FieldBottle Flasche",es:"Cantimplora FieldBottle",fr:"Gourde FieldBottle",
-pl:"Bukłak FieldBottle",pt:"Cantil FieldBottle",tr:"FieldBottle Matara",zh:"FieldBottle 壶",zht:"FieldBottle 壺",
-ja:"FieldBottle フラスク",ko:"FieldBottle 플라스크",ar:"قارورة FieldBottle",uk:"Фляга FieldBottle"}},
+            { id:9, usd:12, img:"images/9.png",
+                names:{ru:"Паракорд SurvivalCord 550",en:"SurvivalCord 550 Paracord",de:"SurvivalCord Paracord",es:"Paracord SurvivalCord",
+                    fr:"Paracord SurvivalCord",pl:"Paracord SurvivalCord",pt:"Paracord SurvivalCord",tr:"SurvivalCord Halat",zh:"SurvivalCord 伞绳",
+                    zht:"SurvivalCord 傘繩",ja:"SurvivalCord パラコード",ko:"SurvivalCord 패러코드",ar:"حبل SurvivalCord",uk:"Паракорд SurvivalCord"}},
 
-{ id:11, usd:60, img:"images/11.png",
-names:{ru:"Коврик AirRest Pro",en:"AirRest Pro Mat",de:"AirRest Pro Matte",es:"Colchoneta AirRest Pro",fr:"Tapis AirRest Pro",
-pl:"Mata AirRest Pro",pt:"Colchonete AirRest Pro",tr:"AirRest Pro Mat",zh:"AirRest Pro 垫子",zht:"AirRest Pro 墊子",
-ja:"AirRest Pro マット",ko:"AirRest Pro 매트",ar:"حصيرة AirRest Pro",uk:"Килимок AirRest Pro"}},
+            { id:10, usd:20, img:"images/10.png",
+                names:{ru:"Фляга FieldBottle 1L",en:"FieldBottle 1L Flask",de:"FieldBottle Flasche",es:"Cantimplora FieldBottle",fr:"Gourde FieldBottle",
+                    pl:"Bukłak FieldBottle",pt:"Cantil FieldBottle",tr:"FieldBottle Matara",zh:"FieldBottle 壶",zht:"FieldBottle 壺",
+                    ja:"FieldBottle フラスク",ko:"FieldBottle 플라스크",ar:"قارورة FieldBottle",uk:"Фляга FieldBottle"}},
 
-{ id:12, usd:50, img:"images/12.png",
-names:{ru:"Аптечка FirstAid Compact",en:"FirstAid Compact Kit",de:"FirstAid Compact Set",es:"Botiquín FirstAid Compact",
-fr:"Trousse FirstAid Compact",pl:"Apteczka FirstAid",pt:"Kit FirstAid",tr:"FirstAid Set",zh:"FirstAid 医疗包",
-zht:"FirstAid 醫療包",ja:"FirstAid キット",ko:"FirstAid 키트",ar:"عدة FirstAid",uk:"Аптечка FirstAid"}}
-];
+            { id:11, usd:60, img:"images/11.png",
+                names:{ru:"Коврик AirRest Pro",en:"AirRest Pro Mat",de:"AirRest Pro Matte",es:"Colchoneta AirRest Pro",fr:"Tapis AirRest Pro",
+                    pl:"Mata AirRest Pro",pt:"Colchonete AirRest Pro",tr:"AirRest Pro Mat",zh:"AirRest Pro 垫子",zht:"AirRest Pro 墊子",
+                    ja:"AirRest Pro マット",ko:"AirRest Pro 매트",ar:"حصيرة AirRest Pro",uk:"Килимок AirRest Pro"}},
 
-// Apocalypse conversion rates
-const rates={ru:145,en:1,de:1.4,es:1.4,fr:1.4,pl:4.8,pt:5,tr:60,zh:12,zht:13,ja:240,ko:2000,ar:5.5,uk:80};
-const sym={ru:"₽",en:"$",de:"€",es:"€",fr:"€",pl:"zł",pt:"R$",tr:"₺",zh:"元",zht:"圓",ja:"¥",ko:"₩",ar:"ر.س",uk:"₴"};
+            { id:12, usd:50, img:"images/12.png",
+                names:{ru:"Аптечка FirstAid Compact",en:"FirstAid Compact Kit",de:"FirstAid Compact Set",es:"Botiquín FirstAid Compact",
+                    fr:"Trousse FirstAid Compact",pl:"Apteczka FirstAid",pt:"Kit FirstAid",tr:"FirstAid Set",zh:"FirstAid 医疗包",
+                    zht:"FirstAid 醫療包",ja:"FirstAid キット",ko:"FirstAid 키트",ar:"عدة FirstAid",uk:"Аптечка FirstAid"}}
+        ];
+
+        // Курсы "апокалиптических" валют (от USD)
+        const rates = {
+            ru:145,en:1,de:1.4,es:1.4,fr:1.4,pl:4.8,pt:5,tr:60,zh:12,zht:13,ja:240,ko:2000,ar:5.5,uk:80
+        };
+        const sym = {
+            ru:"₽",en:"$",de:"€",es:"€",fr:"€",pl:"zł",pt:"R$",tr:"₺",zh:"元",zht:"圓",ja:"¥",ko:"₩",ar:"ر.س",uk:"₴"
+        };
+
+        function applyStaticTranslations(lang){
+            const ui = uiText[lang] || uiText.ru;
+            const catTitle = document.getElementById('sidebar-categories-title');
+            const priceTitle = document.getElementById('sidebar-price-title');
+            const priceFrom = document.getElementById('price-from-label');
+            const priceTo = document.getElementById('price-to-label');
+
+            if (catTitle) catTitle.textContent = ui.categoriesTitle;
+            if (priceTitle) priceTitle.textContent = ui.priceTitle;
+            if (priceFrom) priceFrom.textContent = ui.priceFrom;
+            if (priceTo) priceTo.textContent = ui.priceTo;
+        }
 
         function renderArchive(lang) {
-            if (!sym[lang]) {
-                lang = 'ru';
-            }
+            if (!sym[lang]) lang = 'ru';
+
+            const ui = uiText[lang] || uiText.ru;
 
             let html = "";
             items.forEach(function(i) {
                 const name = (i.names && i.names[lang]) || i.names.ru || "";
                 const rate = rates[lang] || 1;
-                const priceValue = Math.round(i.usd * rate);
-                const priceText = priceValue.toLocaleString('ru-RU') + " " + (sym[lang] || "$");
-                const oldPriceText = "~ " + i.usd.toFixed(0) + " $ до войны";
+
+                const baseConv = i.usd * rate;
+                const newPriceValue = Math.round(baseConv);
+                const oldPriceValue = Math.round(baseConv * 1.25); // старая цена чуть выше
+
+                const priceText = newPriceValue.toLocaleString('ru-RU') + " " + (sym[lang] || "$");
+                const oldPriceText = oldPriceValue.toLocaleString('ru-RU') + " " + (sym[lang] || "$");
                 const idText = String(i.id).padStart(6, "0");
 
                 html += `
@@ -893,21 +1041,21 @@ const sym={ru:"₽",en:"$",de:"€",es:"€",fr:"€",pl:"zł",pt:"R$",tr:"₺",
                     </div>
                     <div class="product-controls">
                         <button class="btn btn-primary btn-disabled js-offline-btn">
-                            Купить сейчас
+                            ${ui.buyNow}
                         </button>
                         <button class="btn btn-disabled js-offline-btn">
-                            Сравнить
+                            ${ui.compare}
                         </button>
                     </div>
                     <div class="status-offline">
-                        <span>Сеть недоступна.</span> Оформление заказа невозможно.
+                        ${ui.networkDown}
                     </div>
                 </article>`;
             });
 
             productsContainer.innerHTML = html;
 
-            // Навешиваем обработчики на кнопки только внутри списка товаров
+            // Локальные кнопки для вызова модалки
             const modal = document.getElementById('offline-modal');
             const localButtons = productsContainer.querySelectorAll('.js-offline-btn');
 
@@ -923,15 +1071,17 @@ const sym={ru:"₽",en:"$",de:"€",es:"€",fr:"€",pl:"zł",pt:"R$",tr:"₺",
 
         const initialLang = (langSelect && langSelect.value) || 'ru';
         renderArchive(initialLang);
+        applyStaticTranslations(initialLang);
 
         if (langSelect && langSelect.addEventListener) {
             langSelect.addEventListener('change', function (e) {
-                renderArchive(e.target.value);
+                const lang = e.target.value;
+                renderArchive(lang);
+                applyStaticTranslations(lang);
             });
         }
     })();
 </script>
-
 
 </body>
 </html>

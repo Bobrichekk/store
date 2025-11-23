@@ -1,0 +1,937 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>OnlineStore — до войны это был магазин</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* ===== БАЗОВЫЕ НАСТРОЙКИ СТРАНИЦЫ ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #0f172a 0, #020617 60%);
+            color: #e5e7eb;
+            min-height: 100vh;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        .container {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        /* ===== ШАПКА ===== */
+        header {
+            border-bottom: 1px solid #111827;
+            background: linear-gradient(to right, #020617, #020617f0);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(8px);
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 12px 0;
+        }
+
+        .logo {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .logo-title {
+            font-weight: 600;
+            font-size: 18px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .logo-subtitle {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .search {
+            flex: 1;
+            max-width: 480px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .search input {
+            flex: 1;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #374151;
+            background: #020617;
+            color: #e5e7eb;
+            font-size: 14px;
+        }
+
+        .search input::placeholder {
+            color: #6b7280;
+        }
+
+        .btn {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #22c55e, #16a34a);
+            color: #022c22;
+            font-weight: 500;
+            box-shadow: 0 0 0 1px #16a34a70;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.25);
+        }
+
+        .btn-disabled {
+            background: #111827;
+            color: #6b7280;
+            cursor: not-allowed;
+            border: 1px dashed #1f2933;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #e5e7eb;
+            border: 1px solid #374151;
+        }
+
+        .btn-ghost:hover {
+            background: #111827;
+        }
+
+        .header-links {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-size: 13px;
+            color: #9ca3af;
+        }
+
+        .header-links .lang-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .header-links select {
+            padding: 6px 10px;
+            background: #020617;
+            border-radius: 999px;
+            border: 1px solid #374151;
+            color: #e5e7eb;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .header-links select:focus {
+            border-color: #10b981;
+        }
+
+        /* ===== БАННЕР ВВЕРХУ САЙТА ===== */
+        .top-banner {
+            background: radial-gradient(circle at top left, #1d4ed8 0, #020617 55%);
+            border-bottom: 1px solid #111827;
+        }
+
+        .top-banner-inner {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 16px 0 18px;
+            align-items: center;
+        }
+
+        .top-banner-text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .top-banner-title {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .top-banner-subtitle {
+            font-size: 13px;
+            color: #cbd5f5;
+        }
+
+        .top-banner-subtitle span {
+            color: #f97316;
+            font-weight: 500;
+        }
+
+        .top-banner-pill {
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            background: linear-gradient(to right, rgba(239, 68, 68, 0.1), transparent);
+            font-size: 11px;
+            color: #fecaca;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
+        main {
+            padding: 20px 0 28px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 280px minmax(0, 1fr);
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        /* ===== САЙДБАР ===== */
+        .sidebar {
+            background: linear-gradient(to bottom, #020617, #020617f0);
+            border-radius: 16px;
+            border: 1px solid #111827;
+            padding: 14px 14px 16px;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+            position: sticky;
+            top: 68px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 16px;
+        }
+
+        .sidebar-title {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+
+        .category-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 13px;
+        }
+
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 7px;
+            border-radius: 6px;
+            cursor: default;
+            border: 1px dashed transparent;
+        }
+
+        .category-item span {
+            color: #6b7280;
+        }
+
+        .category-item:hover {
+            background: #020617;
+            border-color: #111827;
+        }
+
+        .sidebar-note {
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .sidebar-note strong {
+            color: #e5e7eb;
+        }
+
+        .price-range {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 12px;
+        }
+
+        .price-range input {
+            width: 100%;
+            padding: 4px 6px;
+            border-radius: 6px;
+            border: 1px solid #374151;
+            background: #020617;
+            color: #e5e7eb;
+            font-size: 12px;
+        }
+
+        .offline-note {
+            font-size: 12px;
+            color: #6b7280;
+            border-top: 1px solid #111827;
+            padding-top: 10px;
+            margin-top: 6px;
+        }
+
+        /* ===== ПРАВАЯ КОЛОНКА — ТОВАРЫ ===== */
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .products-header-text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .products-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .products-subtitle {
+            font-size: 13px;
+            color: #9ca3af;
+        }
+
+        .view-switch {
+            display: flex;
+            gap: 6px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .view-switch span {
+            padding: 4px 8px;
+            border-radius: 999px;
+            border: 1px solid #111827;
+            cursor: default;
+        }
+
+        .view-switch span.active {
+            border-color: #1d4ed8;
+            background: linear-gradient(to right, rgba(37, 99, 235, 0.2), transparent);
+            color: #bfdbfe;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .product-card {
+            background: radial-gradient(circle at top left, #020617, #020617);
+            border-radius: 14px;
+            border: 1px solid #111827;
+            padding: 12px 12px 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+        }
+
+        .product-card::before {
+            content: "";
+            position: absolute;
+            inset: -40%;
+            background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.06), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.25s ease-out;
+            pointer-events: none;
+        }
+
+        .product-card:hover::before {
+            opacity: 1;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            padding: 3px 7px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(148, 163, 184, 0.6);
+            color: #e5e7eb;
+        }
+
+        .product-image {
+            height: 130px;
+            border-radius: 10px;
+            border: 1px dashed #1f2937;
+            background: radial-gradient(circle at top, #020617, #020617);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #6b7280;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .product-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .product-price-block {
+            margin-top: 4px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .product-old-price {
+            font-size: 12px;
+            color: #6b7280;
+            text-decoration: line-through;
+        }
+
+        .product-controls {
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .status-offline {
+            margin-top: 6px;
+            font-size: 11px;
+            color: #9ca3af;
+            border-top: 1px dashed #111827;
+            padding-top: 6px;
+        }
+
+        .status-offline span {
+            color: #f87171;
+        }
+
+        /* ===== ПОДВАЛ ===== */
+        footer {
+            border-top: 1px solid #111827;
+            padding: 14px 0 22px;
+            background: #020617;
+            margin-top: 8px;
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 12px;
+            color: #6b7280;
+            flex-wrap: wrap;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .footer-links a {
+            cursor: default;
+        }
+
+        .footer-links a:hover {
+            color: #9ca3af;
+        }
+
+        /* ===== МОДАЛКА С ИНФОЙ ===== */
+        .offline-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at top, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.98));
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        .offline-modal {
+            background: #020617;
+            border-radius: 16px;
+            border: 1px solid #1f2937;
+            padding: 18px 18px 16px;
+            max-width: 460px;
+            width: calc(100% - 32px);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.9);
+        }
+
+        .offline-modal-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .offline-modal-text {
+            font-size: 13px;
+            color: #d1d5db;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .offline-modal-hint {
+            font-size: 12px;
+            color: #9ca3af;
+            line-height: 1.5;
+            border-top: 1px solid #111827;
+            padding-top: 8px;
+            margin-bottom: 10px;
+        }
+
+        .offline-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .header-inner {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .products-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .search {
+                order: 3;
+                width: 100%;
+            }
+
+            .top-banner-inner {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== ВЕРХНИЙ БАННЕР ===== -->
+<div class="top-banner">
+    <div class="top-banner-inner container">
+        <div class="top-banner-text">
+            <div class="top-banner-title">Август 2038 — Архивная копия</div>
+            <div class="top-banner-subtitle">
+                До войны здесь была большая распродажа. <span>Скидка до 70%</span> на снаряжение и электронику.
+            </div>
+        </div>
+        <div class="top-banner-pill">
+            Все данные устарели. Заказ недоступен.
+        </div>
+    </div>
+</div>
+
+<!-- ===== ШАПКА САЙТА ===== -->
+<header>
+    <div class="container header-inner">
+        <div class="logo">
+            <div class="logo-title">OnlineStore</div>
+            <div class="logo-subtitle">до войны здесь был интернет-магазин</div>
+        </div>
+
+        <form class="search" onsubmit="return false;">
+            <input type="search" placeholder="Поиск по каталогу (недоступно)">
+            <button type="button" class="btn btn-disabled js-offline-btn">Найти</button>
+        </form>
+
+        <div class="header-links">
+            <span class="lang-label">Язык / Language:</span>
+            <select id="langSelect">
+                <option value="ru">Русский</option>
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="pl">Polski</option>
+                <option value="pt">Português</option>
+                <option value="tr">Türkçe</option>
+                <option value="zh">简体中文</option>
+                <option value="zht">繁體中文</option>
+                <option value="ja">日本語</option>
+                <option value="ko">한국어</option>
+                <option value="ar">العربية</option>
+                <option value="uk">Українська</option>
+            </select>
+            <span>Войти</span>
+            <span>Регистрация</span>
+            <span>Корзина (0)</span>
+        </div>
+    </div>
+</header>
+
+<!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
+<main>
+    <div class="container layout">
+        <!-- ===== ЛЕВАЯ КОЛОНКА / САЙДБАР ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Категории</div>
+                <div class="category-list">
+                    <div class="category-item">
+                        Смартфоны и гаджеты <span>128</span>
+                    </div>
+                    <div class="category-item">
+                        Ноутбуки и ПК <span>86</span>
+                    </div>
+                    <div class="category-item">
+                        Умный дом <span>42</span>
+                    </div>
+                    <div class="category-item">
+                        Туризм и выживание <span>37</span>
+                    </div>
+                    <div class="category-item">
+                        Телевизоры и аудио <span>54</span>
+                    </div>
+                    <div class="category-item">
+                        Спорт и отдых <span>48</span>
+                    </div>
+                    <div class="category-item">
+                        Авто и инструменты <span>36</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Цена</div>
+                <div class="price-range">
+                    <label>
+                        От:
+                        <input type="text" placeholder="недоступно">
+                    </label>
+                    <label>
+                        До:
+                        <input type="text" placeholder="недоступно">
+                    </label>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Статус сервиса</div>
+                <div class="sidebar-note">
+                    Этот магазин был отключён от сети после начала событий,
+                    которые вы изучаете в игре.<br><br>
+                    <strong>Все кнопки, фильтры и поиск больше не работают.</strong><br>
+                    Вы видите только сохранённую копию страницы.
+                </div>
+            </div>
+
+            <div class="offline-note">
+                Попробуйте нажать любую кнопку — система сообщит,
+                что сервер недоступен.
+            </div>
+        </aside>
+
+        <!-- ===== ПРАВАЯ КОЛОНКА / СПИСОК ТОВАРОВ ===== -->
+        <section>
+            <div class="products-header">
+                <div class="products-header-text">
+                    <div class="products-title">Популярные товары перед отключением</div>
+                    <div class="products-subtitle">
+                        Названия товаров изменяются в зависимости от языка. Цены пересчитываются в условные валюты мира после катастрофы.
+                    </div>
+                </div>
+                <div class="view-switch">
+                    <span class="active">Плитка</span>
+                    <span>Список</span>
+                </div>
+            </div>
+
+            <div class="products-grid" id="products"></div>
+        </section>
+    </div>
+</main>
+
+<!-- ===== ПОДВАЛ ===== -->
+<footer>
+    <div class="footer-inner">
+        <div>
+            © 2035 OnlineStore. Все права были защищены до отключения сети.
+        </div>
+        <div class="footer-links">
+            <a>О компании</a>
+            <a>Политика конфиденциальности</a>
+            <a>Служба поддержки</a>
+        </div>
+    </div>
+</footer>
+
+<!-- ===== МОДАЛКА "СЕРВИС НЕДОСТУПЕН" ===== -->
+<div class="offline-modal-backdrop" id="offline-modal">
+    <div class="offline-modal">
+        <div class="offline-modal-title">Сервис недоступен</div>
+        <div class="offline-modal-text">
+            Этот интернет-магазин больше не принимает заказы.<br>
+            Перед вами — последняя сохранённая копия сайта из "старого мира".
+        </div>
+        <div class="offline-modal-hint">
+            В вашей игре вы можете считать, что персонаж видит именно эту страницу после сканирования
+            QR-кода.
+        </div>
+        <div class="offline-modal-footer">
+            <button class="btn btn-ghost" id="offline-close">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ===== ПРОСТАЯ ЛОГИКА "МЕРТВОГО" МАГАЗИНА =====
+    (function () {
+        const offlineButtons = document.querySelectorAll('.js-offline-btn');
+        const modal = document.getElementById('offline-modal');
+        const modalClose = document.getElementById('offline-close');
+
+        function openModal() {
+            if (!modal) return;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            if (!modal) return;
+            modal.style.display = 'none';
+        }
+
+        offlineButtons.forEach(btn => {
+            btn.addEventListener('click', openModal);
+        });
+
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+
+        if (modalClose) {
+            modalClose.addEventListener('click', closeModal);
+        }
+
+        // Показываем модалку 1 раз при первом заходе (можно выключить, если не надо)
+        setTimeout(openModal, 1500);
+    })();
+</script>
+
+<script>
+    // ===== МУЛЬТИЯЗЫЧНЫЙ СПИСОК ТОВАРОВ (АРХИВ) =====
+    (function () {
+        const productsContainer = document.getElementById('products');
+        const langSelect = document.getElementById('langSelect');
+
+        if (!productsContainer) return;
+
+const items = [
+{ id:1, usd:120, img:"images/1.png",
+names:{ru:"Рюкзак TrekPro 75L",en:"TrekPro 75L Backpack",de:"TrekPro 75L Rucksack",es:"Mochila TrekPro 75L",fr:"Sac TrekPro 75L",
+pl:"Plecak TrekPro 75L",pt:"Mochila TrekPro 75L",tr:"TrekPro 75L Sırt Çantası",zh:"TrekPro 75L 背包",zht:"TrekPro 75L 背包",
+ja:"TrekPro 75L バックパック",ko:"TrekPro 75L 백팩",ar:"حقيبة TrekPro 75L",uk:"Рюкзак TrekPro 75L"}},
+
+{ id:2, usd:35, img:"images/2.png",
+names:{ru:"Газовая горелка FirePeak Mini",en:"FirePeak Mini Stove",de:"FirePeak Mini Kocher",es:"Estufa FirePeak Mini",fr:"Réchaud FirePeak Mini",
+pl:"Kuchenka FirePeak Mini",pt:"Fogareiro FirePeak Mini",tr:"FirePeak Mini Ocak",zh:"FirePeak Mini 炉具",zht:"FirePeak Mini 爐具",
+ja:"FirePeak Mini ストーブ",ko:"FirePeak Mini 스토브",ar:"موقد FirePeak Mini",uk:"Пальник FirePeak Mini"}},
+
+{ id:3, usd:90, img:"images/3.png",
+names:{ru:"Спальный мешок ArcticSleep -15°C",en:"ArcticSleep -15°C Sleeping Bag",de:"ArcticSleep -15°C Schlafsack",es:"Saco ArcticSleep -15°C",
+fr:"Sac de couchage ArcticSleep",pl:"Śpiwór ArcticSleep",pt:"Saco ArcticSleep",tr:"ArcticSleep Uyku Tulumu",zh:"ArcticSleep 睡袋",
+zht:"ArcticSleep 睡袋",ja:"ArcticSleep 寝袋",ko:"ArcticSleep 침낭",ar:"كيس نوم ArcticSleep",uk:"Спальник ArcticSleep"}},
+
+{ id:4, usd:150, img:"images/4.png",
+names:{ru:"Палатка TrailDome 2",en:"TrailDome 2 Tent",de:"TrailDome 2 Zelt",es:"Tienda TrailDome 2",fr:"Tente TrailDome 2",
+pl:"Namiot TrailDome 2",pt:"Tenda TrailDome 2",tr:"TrailDome 2 Çadır",zh:"TrailDome 2 帐篷",zht:"TrailDome 2 帳篷",
+ja:"TrailDome 2 テント",ko:"TrailDome 2 텐트",ar:"خيمة TrailDome 2",uk:"Намет TrailDome 2"}},
+
+{ id:5, usd:40, img:"images/5.png",
+names:{ru:"Фильтр для воды ClearStream",en:"ClearStream Water Filter",de:"ClearStream Wasserfilter",es:"Filtro ClearStream",
+fr:"Filtre ClearStream",pl:"Filtr ClearStream",pt:"Filtro ClearStream",tr:"ClearStream Su Filtresi",zh:"ClearStream 过滤器",
+zht:"ClearStream 過濾器",ja:"ClearStream フィルター",ko:"ClearStream 필터",ar:"فلتر ClearStream",uk:"Фільтр ClearStream"}},
+
+{ id:6, usd:70, img:"images/6.png",
+names:{ru:"Мультитул SteelHand 18-в-1",en:"SteelHand 18-in-1 Multitool",de:"SteelHand Multitool",es:"Multiherramienta SteelHand",
+fr:"Outil SteelHand",pl:"Multitool SteelHand",pt:"Multitool SteelHand",tr:"SteelHand Çoklu Alet",zh:"SteelHand 工具",
+zht:"SteelHand 工具",ja:"SteelHand マルチツール",ko:"SteelHand 멀티툴",ar:"عدة SteelHand",uk:"Мультитул SteelHand"}},
+
+{ id:7, usd:55, img:"images/7.png",
+names:{ru:"Нож HunterEdge 110",en:"HunterEdge 110 Knife",de:"HunterEdge 110 Messer",es:"Cuchillo HunterEdge 110",
+fr:"Couteau HunterEdge 110",pl:"Nóż HunterEdge 110",pt:"Faca HunterEdge 110",tr:"HunterEdge 110 Bıçak",zh:"HunterEdge 110 刀",
+zht:"HunterEdge 110 刀",ja:"HunterEdge 110 ナイフ",ko:"HunterEdge 110 나이프",ar:"سكين HunterEdge 110",uk:"Ніж HunterEdge 110"}},
+
+{ id:8, usd:30, img:"images/8.png",
+names:{ru:"Налобный фонарь LightWay 600",en:"LightWay 600 Headlamp",de:"LightWay 600 Stirnlampe",es:"Linterna LightWay 600",
+fr:"Lampe LightWay 600",pl:"Latarka LightWay 600",pt:"Lanterna LightWay 600",tr:"LightWay 600 Kafa Lambası",zh:"LightWay 600 头灯",
+zht:"LightWay 600 頭燈",ja:"LightWay 600 ランプ",ko:"LightWay 600 헤드램프",ar:"مصباح LightWay 600",uk:"Ліхтар LightWay 600"}},
+
+{ id:9, usd:12, img:"images/9.png",
+names:{ru:"Паракорд SurvivalCord 550",en:"SurvivalCord 550 Paracord",de:"SurvivalCord Paracord",es:"Paracord SurvivalCord",
+fr:"Paracord SurvivalCord",pl:"Paracord SurvivalCord",pt:"Paracord SurvivalCord",tr:"SurvivalCord Halat",zh:"SurvivalCord 伞绳",
+zht:"SurvivalCord 傘繩",ja:"SurvivalCord パラコード",ko:"SurvivalCord 패러코드",ar:"حبل SurvivalCord",uk:"Паракорд SurvivalCord"}},
+
+{ id:10, usd:20, img:"images/10.png",
+names:{ru:"Фляга FieldBottle 1L",en:"FieldBottle 1L Flask",de:"FieldBottle Flasche",es:"Cantimplora FieldBottle",fr:"Gourde FieldBottle",
+pl:"Bukłak FieldBottle",pt:"Cantil FieldBottle",tr:"FieldBottle Matara",zh:"FieldBottle 壶",zht:"FieldBottle 壺",
+ja:"FieldBottle フラスク",ko:"FieldBottle 플라스크",ar:"قارورة FieldBottle",uk:"Фляга FieldBottle"}},
+
+{ id:11, usd:60, img:"images/11.png",
+names:{ru:"Коврик AirRest Pro",en:"AirRest Pro Mat",de:"AirRest Pro Matte",es:"Colchoneta AirRest Pro",fr:"Tapis AirRest Pro",
+pl:"Mata AirRest Pro",pt:"Colchonete AirRest Pro",tr:"AirRest Pro Mat",zh:"AirRest Pro 垫子",zht:"AirRest Pro 墊子",
+ja:"AirRest Pro マット",ko:"AirRest Pro 매트",ar:"حصيرة AirRest Pro",uk:"Килимок AirRest Pro"}},
+
+{ id:12, usd:50, img:"images/12.png",
+names:{ru:"Аптечка FirstAid Compact",en:"FirstAid Compact Kit",de:"FirstAid Compact Set",es:"Botiquín FirstAid Compact",
+fr:"Trousse FirstAid Compact",pl:"Apteczka FirstAid",pt:"Kit FirstAid",tr:"FirstAid Set",zh:"FirstAid 医疗包",
+zht:"FirstAid 醫療包",ja:"FirstAid キット",ko:"FirstAid 키트",ar:"عدة FirstAid",uk:"Аптечка FirstAid"}}
+];
+
+// Apocalypse conversion rates
+const rates={ru:145,en:1,de:1.4,es:1.4,fr:1.4,pl:4.8,pt:5,tr:60,zh:12,zht:13,ja:240,ko:2000,ar:5.5,uk:80};
+const sym={ru:"₽",en:"$",de:"€",es:"€",fr:"€",pl:"zł",pt:"R$",tr:"₺",zh:"元",zht:"圓",ja:"¥",ko:"₩",ar:"ر.س",uk:"₴"};
+
+        function renderArchive(lang) {
+            if (!sym[lang]) {
+                lang = 'ru';
+            }
+
+            let html = "";
+            items.forEach(function(i) {
+                const name = (i.names && i.names[lang]) || i.names.ru || "";
+                const rate = rates[lang] || 1;
+                const priceValue = Math.round(i.usd * rate);
+                const priceText = priceValue.toLocaleString('ru-RU') + " " + (sym[lang] || "$");
+                const oldPriceText = "~ " + i.usd.toFixed(0) + " $ до войны";
+                const idText = String(i.id).padStart(6, "0");
+
+                html += `
+                <article class="product-card">
+                    <div class="product-badge">Архив</div>
+                    <div class="product-image">
+                        <img src="${i.img}" alt="${name}" onerror="this.src='images/placeholder.png'; this.style.objectFit='contain';">
+                    </div>
+                    <h2 class="product-title">${name}</h2>
+                    <div class="product-meta">
+                        <span>Данные о наличии и доставке устарели.</span>
+                        <span>Курс пересчёта условен.</span>
+                    </div>
+                    <div class="product-price-block">
+                        <div>
+                            <div class="product-price">${priceText}</div>
+                            <div class="product-old-price">${oldPriceText}</div>
+                        </div>
+                        <span style="font-size:11px;color:#6b7280;">ID товара: ${idText}</span>
+                    </div>
+                    <div class="product-controls">
+                        <button class="btn btn-primary btn-disabled js-offline-btn">
+                            Купить сейчас
+                        </button>
+                        <button class="btn btn-disabled js-offline-btn">
+                            Сравнить
+                        </button>
+                    </div>
+                    <div class="status-offline">
+                        <span>Сеть недоступна.</span> Оформление заказа невозможно.
+                    </div>
+                </article>`;
+            });
+
+            productsContainer.innerHTML = html;
+
+            // Навешиваем обработчики на кнопки только внутри списка товаров
+            const modal = document.getElementById('offline-modal');
+            const localButtons = productsContainer.querySelectorAll('.js-offline-btn');
+
+            function openModalLocal() {
+                if (!modal) return;
+                modal.style.display = 'flex';
+            }
+
+            localButtons.forEach(function(btn) {
+                btn.addEventListener('click', openModalLocal);
+            });
+        }
+
+        const initialLang = (langSelect && langSelect.value) || 'ru';
+        renderArchive(initialLang);
+
+        if (langSelect && langSelect.addEventListener) {
+            langSelect.addEventListener('change', function (e) {
+                renderArchive(e.target.value);
+            });
+        }
+    })();
+</script>
+
+
+</body>
+</html>
